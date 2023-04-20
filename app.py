@@ -1,6 +1,6 @@
 import os
 from flask import Flask, abort, jsonify, request
-from models import setup_db, Actor, Movie
+from models import setup_db, Actor, Movie, Assign
 from flask_cors import CORS
 from datetime import datetime
 
@@ -126,6 +126,55 @@ def create_app(test_config=None):
             {
                 "success": True,
                 "edited": movie.id
+            }
+        )
+
+    @app.route('/movies/<int:movie_id>/actors', methods=['GET'])
+    def get_actors_by_movie(movie_id):
+        movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
+        if movie is None:
+            abort(404)
+        res = [actor.format() for actor in movie.actors]
+        return jsonify(
+            {
+                "success": True,
+                "actors": res,
+                "total_actors": len(res)
+            }
+        )
+    
+    @app.route("/movies/<int:movie_id>/actors/<int:actor_id>", methods=['POST'])
+    def assign_actor_to_movie(movie_id, actor_id):
+        print("moive_id = ", movie_id)
+        print("actor_id = ", actor_id)
+        movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
+        if movie is None:
+            abort(404)
+        print("get movie")
+        actor = Actor.query.filter(Actor.id==actor_id).one_or_none()
+        if actor is None:
+            abort(404)
+        print("get actor")
+        assign = Assign(movie_id=movie_id, actor_id=actor_id)
+        assign.insert()
+        return jsonify(
+            {
+                "success": True,
+                "created": assign.id
+            }
+        )
+
+    @app.route("/movies/<int:movie_id>/actors/<int:actor_id>", methods=['DELETE'])
+    def remove_actor_from_movie(movie_id, actor_id):
+        assign = Assign.query.filter(Assign.movie_id==movie_id).filter(Assign.actor_id==actor_id).one_or_none()
+        if assign is None:
+            abort(404)
+        assign_id = assign.id
+        assign.delete()
+        return jsonify(
+            {
+                "success": True,
+                "deleted": assign_id
             }
         )
     

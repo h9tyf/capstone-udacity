@@ -1,8 +1,10 @@
 import os
 from sqlalchemy import Column, String, create_engine
+from flask import Flask, abort, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import json
 from datetime import datetime
+from sqlalchemy.ext.hybrid import hybrid_property
 
 database_path = os.environ['DATABASE_URL']
 if database_path.startswith("postgres://"):
@@ -85,3 +87,37 @@ class Movie(db.Model):
       'id': self.id,
       'title': self.title,
       'release_date': self.release_date}
+
+  @hybrid_property
+  def actors(self):
+    assigns = Assign.query.filter(Assign.movie_id==self.id).all()
+    return [Actor.query.filter(Actor.id==assign.actor_id).first() for assign in assigns]
+  
+
+class Assign(db.Model):  
+  __tablename__ = 'Assign'
+
+  id = Column(db.Integer, primary_key=True)
+  movie_id = db.Column(db.Integer, db.ForeignKey('Movie.id'))
+  actor_id = db.Column(db.Integer, db.ForeignKey('Actor.id'))
+
+  def __init__(self, movie_id, actor_id):
+    self.movie_id = movie_id
+    self.actor_id = actor_id
+
+  def insert(self):
+      db.session.add(self)
+      db.session.commit()
+
+  def update(self):
+      db.session.commit()
+
+  def delete(self):
+      db.session.delete(self)
+      db.session.commit()
+
+  def format(self):
+    return {
+      'id': self.id,
+      'movie_id': self.movie_id,
+      'actor_id': self.actor_id}
