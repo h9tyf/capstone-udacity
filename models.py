@@ -2,6 +2,7 @@ import os
 from sqlalchemy import Column, String, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
+from datetime import datetime
 
 database_path = os.environ['DATABASE_URL']
 if database_path.startswith("postgres://"):

@@ -2,6 +2,7 @@ import os
 from flask import Flask, abort, jsonify, request
 from models import setup_db, Actor, Movie
 from flask_cors import CORS
+from datetime import datetime
 
 def create_app(test_config=None):
 
@@ -100,7 +101,7 @@ def create_app(test_config=None):
     def post_movies():
         body = request.get_json()
         new_title = body.get("title", None)
-        new_relase_date = body.get("release_date", None)
+        new_relase_date = datetime.utcfromtimestamp(body.get("release_date", None)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         movie = Movie(title=new_title, release_date=new_relase_date)
         movie.insert()
@@ -119,7 +120,7 @@ def create_app(test_config=None):
             abort(404)
         body = request.get_json()
         movie.title = body.get("title", None)
-        movie.relase_date = body.get("release_date", None)
+        movie.release_date = datetime.utcfromtimestamp(body.get("release_date", None)).strftime('%Y-%m-%dT%H:%M:%SZ')
         movie.update()
         return jsonify(
             {
