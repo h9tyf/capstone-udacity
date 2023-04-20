@@ -3,7 +3,7 @@ from flask import Flask, abort, jsonify, request
 from models import setup_db, Actor, Movie, Assign
 from flask_cors import CORS
 from datetime import datetime
-from .auth.auth import AuthError, requires_auth
+from auth.auth import AuthError, requires_auth
 
 def create_app(test_config=None):
 
