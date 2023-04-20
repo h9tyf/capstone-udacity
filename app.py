@@ -3,6 +3,7 @@ from flask import Flask, abort, jsonify, request
 from models import setup_db, Actor, Movie, Assign
 from flask_cors import CORS
 from datetime import datetime
+from .auth.auth import AuthError, requires_auth
 
 def create_app(test_config=None):
 
@@ -32,6 +33,7 @@ def create_app(test_config=None):
         })
     
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+    @requires_auth('delete:actor')
     def delete_actors(actor_id):
         actor = Actor.query.filter(Actor.id==actor_id).one_or_none()
         if actor is None:
@@ -43,6 +45,7 @@ def create_app(test_config=None):
             })
     
     @app.route('/actors', methods=['POST'])
+    @requires_auth('post:actor')
     def post_actors():
         body = request.get_json()
         new_name = body.get("name", None)
@@ -60,6 +63,7 @@ def create_app(test_config=None):
         )
     
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+    @requires_auth('patch:actor')
     def patch_actors(actor_id):
         actor = Actor.query.filter(Actor.id==actor_id).one_or_none()
         if actor is None:
@@ -87,6 +91,7 @@ def create_app(test_config=None):
         })
     
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+    @requires_auth('delete:movie')
     def delete_movies(movie_id):
         movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
         if movie is None:
@@ -98,6 +103,7 @@ def create_app(test_config=None):
             })
     
     @app.route('/movies', methods=['POST'])
+    @requires_auth('post:movie')
     def post_movies():
         body = request.get_json()
         new_title = body.get("title", None)
@@ -114,6 +120,7 @@ def create_app(test_config=None):
         )
     
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+    @requires_auth('patch:movie')
     def patch_movies(movie_id):
         movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
         if movie is None:
@@ -144,6 +151,7 @@ def create_app(test_config=None):
         )
     
     @app.route("/movies/<int:movie_id>/actors/<int:actor_id>", methods=['POST'])
+    @requires_auth('post:assign')
     def assign_actor_to_movie(movie_id, actor_id):
         print("moive_id = ", movie_id)
         print("actor_id = ", actor_id)
@@ -165,6 +173,7 @@ def create_app(test_config=None):
         )
 
     @app.route("/movies/<int:movie_id>/actors/<int:actor_id>", methods=['DELETE'])
+    @requires_auth('delete:assign')
     def remove_actor_from_movie(movie_id, actor_id):
         assign = Assign.query.filter(Assign.movie_id==movie_id).filter(Assign.actor_id==actor_id).one_or_none()
         if assign is None:
