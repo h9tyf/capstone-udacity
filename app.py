@@ -51,6 +51,8 @@ def create_app(test_config=None):
         new_name = body.get("name", None)
         new_age = body.get("age", None)
         new_gender = body.get("gender", None)
+        if new_name is None:
+            abort(422)
 
         actor = Actor(name=new_name, age=new_age, gender=new_gender)
         actor.insert()
@@ -108,7 +110,9 @@ def create_app(test_config=None):
         body = request.get_json()
         new_title = body.get("title", None)
         new_relase_date = datetime.utcfromtimestamp(body.get("release_date", None)).strftime('%Y-%m-%dT%H:%M:%SZ')
-
+        if new_title is None:
+            abort(422)
+        
         movie = Movie(title=new_title, release_date=new_relase_date)
         movie.insert()
 
