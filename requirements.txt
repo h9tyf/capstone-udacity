@@ -1,8 +1,5 @@
 alembic==1.6.5
-Authlib==1.2.0
-cffi==1.15.1
 click==8.0.1
-cryptography==40.0.2
 DateTime==5.1
 ecdsa==0.18.0
 Flask==1.1.2
@@ -19,9 +16,7 @@ Mako==1.1.4
 MarkupSafe==2.0.1
 psycopg2-binary==2.9.1
 pyasn1==0.5.0
-pycparser==2.21
 python-dateutil==2.8.1
-python-dotenv==1.0.0
 python-editor==1.0.4
 python-jose==3.3.0
 pytz==2023.3
