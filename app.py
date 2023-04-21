@@ -34,7 +34,7 @@ def create_app(test_config=None):
     
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
     @requires_auth('delete:actor')
-    def delete_actors(actor_id):
+    def delete_actors(payload, actor_id):
         actor = Actor.query.filter(Actor.id==actor_id).one_or_none()
         if actor is None:
             abort(404)
@@ -46,7 +46,7 @@ def create_app(test_config=None):
     
     @app.route('/actors', methods=['POST'])
     @requires_auth('post:actor')
-    def post_actors():
+    def post_actors(payload):
         body = request.get_json()
         new_name = body.get("name", None)
         new_age = body.get("age", None)
@@ -64,7 +64,7 @@ def create_app(test_config=None):
     
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
     @requires_auth('patch:actor')
-    def patch_actors(actor_id):
+    def patch_actors(payload, actor_id):
         actor = Actor.query.filter(Actor.id==actor_id).one_or_none()
         if actor is None:
             abort(404)
@@ -92,7 +92,7 @@ def create_app(test_config=None):
     
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
     @requires_auth('delete:movie')
-    def delete_movies(movie_id):
+    def delete_movies(payload, movie_id):
         movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
         if movie is None:
             abort(404)
@@ -104,7 +104,7 @@ def create_app(test_config=None):
     
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movie')
-    def post_movies():
+    def post_movies(payload):
         body = request.get_json()
         new_title = body.get("title", None)
         new_relase_date = datetime.utcfromtimestamp(body.get("release_date", None)).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -121,7 +121,7 @@ def create_app(test_config=None):
     
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
     @requires_auth('patch:movie')
-    def patch_movies(movie_id):
+    def patch_movies(payload, movie_id):
         movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
         if movie is None:
             abort(404)
@@ -152,7 +152,7 @@ def create_app(test_config=None):
     
     @app.route("/movies/<int:movie_id>/actors/<int:actor_id>", methods=['POST'])
     @requires_auth('post:assign')
-    def assign_actor_to_movie(movie_id, actor_id):
+    def assign_actor_to_movie(payload, movie_id, actor_id):
         print("moive_id = ", movie_id)
         print("actor_id = ", actor_id)
         movie = Movie.query.filter(Movie.id==movie_id).one_or_none()
@@ -174,7 +174,7 @@ def create_app(test_config=None):
 
     @app.route("/movies/<int:movie_id>/actors/<int:actor_id>", methods=['DELETE'])
     @requires_auth('delete:assign')
-    def remove_actor_from_movie(movie_id, actor_id):
+    def remove_actor_from_movie(payload, movie_id, actor_id):
         assign = Assign.query.filter(Assign.movie_id==movie_id).filter(Assign.actor_id==actor_id).one_or_none()
         if assign is None:
             abort(404)
